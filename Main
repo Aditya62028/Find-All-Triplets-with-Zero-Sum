@@ -1,0 +1,57 @@
+import java.util.*;
+import java.io.*;
+class Solution {
+    public List<List<Integer>> findTriplets(int[] arr) {
+        List<List<Integer>> answer = new ArrayList<>();
+        for (int i = 0; i < arr.length; i++) {
+            Map<Integer, List<Integer>> map = new HashMap<>();
+            for (int j = i + 1; j < arr.length; j++) {
+                int sum = (arr[i] + arr[j]) * -1;
+                if (map.containsKey(sum)) {
+                    for (int k : map.get(sum)) {
+                        List<Integer> ans = new ArrayList<>(Arrays.asList(arr[i], arr[j], arr[k]));
+                        Collections.sort(ans);
+                        answer.add(ans);
+                    }
+                }
+                map.putIfAbsent(arr[j], new ArrayList<>());
+                map.get(arr[j]).add(j);
+            }
+        }
+        Set<List<Integer>> uniqueTriplets = new HashSet<>(answer);
+        answer.clear();
+        answer.addAll(uniqueTriplets);
+        answer.forEach(Collections::sort);
+        answer.sort((a, b) -> {
+            for (int i = 0; i < a.size(); i++) {
+                if (!a.get(i).equals(b.get(i))) {
+                    return a.get(i) - b.get(i);
+                }
+            }
+            return 0;
+        });
+        return answer;
+    }
+}
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter number of test cases: ");
+        int t = Integer.parseInt(read.readLine().trim());
+        Solution obj = new Solution();
+        while (t-- > 0) {
+            System.out.print("Enter array elements separated by spaces: ");
+            String[] numsStr = read.readLine().trim().split(" ");
+            int[] nums = Arrays.stream(numsStr).mapToInt(Integer::parseInt).toArray();
+            List<List<Integer>> res = obj.findTriplets(nums);
+            if (res.size() == 0) {
+                System.out.println("[]");
+            } else {
+                for (List<Integer> triplet : res) {
+                    System.out.println(triplet);
+                }
+            }
+            System.out.println("~");
+        }
+    }
+}
